@@ -2,6 +2,7 @@ package org.dogepool.practicalrx.controllers;
 
 import java.util.Map;
 
+import org.dogepool.practicalrx.config.AvatarProperties;
 import org.dogepool.practicalrx.domain.User;
 import org.dogepool.practicalrx.domain.UserProfile;
 import org.dogepool.practicalrx.error.*;
@@ -22,8 +23,8 @@ import org.springframework.web.context.request.async.DeferredResult;
 @Controller(value = "/miner")
 public class UserProfileController {
     
-    @Value(value = "${avatar.api.baseUrl}")
-    private String avatarBaseUrl;
+    @Autowired
+    private AvatarProperties avatarProperties;
 
     @Autowired
     private UserService userService;
@@ -49,7 +50,8 @@ public class UserProfileController {
             return deferred;
         } else {
             //find the avatar's url
-            ResponseEntity<Map> avatarResponse = restTemplate.getForEntity(avatarBaseUrl + "/" + user.avatarId, Map.class);
+            ResponseEntity<Map> avatarResponse = restTemplate.getForEntity(
+					avatarProperties.getApi().getBaseUrl() + "/" + user.avatarId, Map.class);
             if (avatarResponse.getStatusCode().is2xxSuccessful()) {
                 Map<String, ?> avatarInfo = avatarResponse.getBody();
                 String avatarUrl = (String) avatarInfo.get("large");
@@ -85,7 +87,8 @@ public class UserProfileController {
             return stringResponse;
         } else {
             //find the avatar's url
-            ResponseEntity<Map> avatarResponse = restTemplate.getForEntity(avatarBaseUrl + "/" + user.avatarId, Map.class);
+            ResponseEntity<Map> avatarResponse = restTemplate.getForEntity(
+					avatarProperties.getApi().getBaseUrl() + "/" + user.avatarId, Map.class);
             if (avatarResponse.getStatusCode().is2xxSuccessful()) {
                 Map<String, ?> avatarInfo = avatarResponse.getBody();
                 String avatarUrl = (String) avatarInfo.get("large");
